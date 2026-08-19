@@ -10,7 +10,7 @@ const createExam = async (req, res) => {
     const {
         courseOfferingId,
         title,
-        createdByTeacherId,
+        // createdByTeacherId,
         startTime,
         endTime,
         duration,
@@ -18,7 +18,9 @@ const createExam = async (req, res) => {
         passingMarks
     } = req.body;
 
-    const newExam = await Exam.create({ courseOfferingId, title, createdByTeacherId, startTime, endTime, duration, totalMarks, passingMarks })
+
+
+    const newExam = await Exam.create({ courseOfferingId, title, createdByTeacherId: req.user.userId, startTime, endTime, duration, totalMarks, passingMarks })
     if (!newExam) {
         return res.status(500).json({
             success: false,
@@ -34,19 +36,15 @@ const createExam = async (req, res) => {
 }
 
 const updateExam = async (req, res) => {
-    
-    const {examId} = req.params
-    const exam = await Exam.findByIdAndUpdate(examId,req.body,{new:true});
-    if (!exam) {
-        return res.status(500).json({
-            success: false,
-            message: "Exam did not updated "
-        })
-    }
+
+    const { examId } = req.params;
+
+
+    const result = await Exam.findByIdAndUpdate(examId, req.body);
 
     return res.status(200).json({
         success: true,
-        exam
+        result
     })
 }
 
@@ -55,11 +53,15 @@ const findExamByteacherId = async (req, res) => {
     const exam = await Exam.find({ createdByTeacherId: teacherId });
     console.log("this is exam found using id ", exam)
     if (exam.length === 0) {
-        return res.status(500).json({
+        return res.status(404).json({
             success: false,
             message: "exam not found in db"
         })
     }
+
+
+
+
     const mcqs = await Exam.aggregate([
         {
             $match: {
@@ -137,8 +139,49 @@ const findExamBySection = async (req, res) => {
                 "duration": 1,
                 "totalMarks": 1,
                 "passingMarks": 1,
-                "mcqs":1
-                
+                "mcqs": 1
+
+
+            }
+        }
+    ])
+    return res.json({
+        mcqs
+    })
+}
+
+const findExamBySectionAndCourse = async (req, res) => {
+    const { sectionId, courseId } = req.body;
+
+    const courseOffering = await CourseOffering.findOne({ sectionId, courseId }).select("_id")
+    console.log("this is coureOffering", courseOffering)
+     const mcqs = await Exam.aggregate([
+        {
+            $match: {
+                courseOfferingId: new  mongoose.Types.ObjectId(courseOffering)
+            }
+        },
+        {
+            $lookup: {
+                from: "mcqs",
+                localField: "_id",
+                foreignField: "examId",
+                as: "mcqs"
+            }
+        },
+        {
+            $project: {
+                "_id": 1,
+                "courseOfferingId": 1,
+                "title": 1,
+                "createdByTeacherId": 1,
+                "startTime": 1,
+                "endTime": 1,
+                "duration": 1,
+                "totalMarks": 1,
+                "passingMarks": 1,
+                "mcqs": 1
+
 
             }
         }
@@ -149,155 +192,113 @@ const findExamBySection = async (req, res) => {
 }
 
 const displayExamStudent = async (req, res) => {
-    
-        const { studentId, examId } = req.body;
 
-        const exam = await Exam.findById(examId);
-        if (!exam) {
-            return res.status(500).json({
-                success: false,
-                message: "something went wrong , exam not found in db "
-            });
-        }
+    const { studentId, examId } = req.body;
 
-        const enrollment = await Enrollment.findOne({ studentId });
-        if (!enrollment) {
-            return res.status(500).json({
-                success: false,
-                message: "Something went wrong , exam not found in db"
-            });
-        }
-
-        const sectionId = enrollment.sectionId;
-        console.log("this is here section id ", sectionId);
-
-        const courseOfferings = await CourseOffering.find({ sectionId });
-        if (!courseOfferings || courseOfferings.length===0) {
-            return res.status(404).json({
-                success: false,
-                message: "No course offering found for student's section"
-            });
-        }
-  
-        const isValid = courseOfferings.some((co)=> co._id.toString()===exam.courseOfferingId.toString())
-
-          if(!isValid){
-            return res.status(500).json({
-                success:false,
-                message:"student is not valid for this exam"
-            })
-          }
-
-        if (new Date() < exam.startTime) {
-            return res.status(400).json({
-                success: false,
-                message: "Exam time  not started",
-                examStartTime: exam.starttime,
-                
-            });
-        }
-
-        if (new Date() > exam.endTime) {
-            return res.status(400).json({
-                success: false,
-                message: "Exam has already ended",
-            });
-        }
+    const exam = await Exam.findById(examId);
 
 
-
-        const mcqs = await Mcq.find({ examId });
-
-        if (!mcqs || mcqs.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No questions found for this exam"
-            });
-        }
-
-        const questions = mcqs.map(mcq => (
-            {
-                _id: mcq._id, statement: mcq.statement, options: mcq.options, marks: mcq.marks
-            }));
-
-        res.status(200).json({
-            success: true,
-            exam: {
-                _id: exam._id,
-                title: exam.title,
-                totalMarks: exam.totalMarks,
-                passingMarks: exam.passingMarks,
-                duration: exam.duration,
-                startTime: exam.startTime,
-                endTime: exam.endTime,
-                
-            },
-            mcqsquestions: questions,
+    if (new Date() < exam.startTime) {
+        return res.status(400).json({
+            success: false,
+            message: "Exam time  not started",
+            examStartTime: exam.starttime,
 
         });
+    }
 
-    
+    if (new Date() > exam.endTime) {
+        return res.status(400).json({
+            success: false,
+            message: "Exam has already ended",
+        });
+    }
+
+
+
+    const mcqs = await Mcq.find({ examId });
+
+    if (!mcqs || mcqs.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No questions found for this exam"
+        });
+    }
+
+    const questions = mcqs.map(mcq => (
+        {
+            _id: mcq._id, statement: mcq.statement, options: mcq.options, marks: mcq.marks
+        }));
+
+    res.status(200).json({
+        success: true,
+        exam: {
+            _id: exam._id,
+            title: exam.title,
+            totalMarks: exam.totalMarks,
+            passingMarks: exam.passingMarks,
+            duration: exam.duration,
+            startTime: exam.startTime,
+            endTime: exam.endTime,
+
+        },
+        mcqsquestions: questions,
+
+    });
+
+
 };
 
 const submitExam = async (req, res) => {
-    
-        const { studentId, examId } = req.body;
-        const { answers } = req.body;
 
-        const exam = await Exam.findById(examId);
+    const { studentId, examId } = req.body;
+    const { answers } = req.body;
 
-        if (!exam) {
-            return res.status(404).json({
-                success: false,
-                message: "Exam not found"
-            });
+
+    const mcqs = await Mcq.find({ examId });
+
+    let obtainedMarks = 0;
+
+    for (const answer of answers) {
+
+        const mcq = mcqs.find(item =>
+            item._id.toString() === answer.mcqId
+        );
+
+        if (!mcq?.length) {
+            continue;
         }
 
-        
-        const mcqs = await Mcq.find({ examId });
+        let isCorrect = false;
 
-        let obtainedMarks = 0;
-        
-        for (const answer of answers) {
-
-            const mcq = mcqs.find(item =>
-                item._id.toString() === answer.mcqId
-            );
-
-            if (!mcq?.length ) {
-                continue;
-            }
-
-            let isCorrect = false;
-
-            if (answer.selectedOption === mcq.correctOption) {
-                isCorrect = true;
-                obtainedMarks += mcq.marks;
-            }
-
-            await StudentAnswer.create({
-                studentId,
-                examId,
-                mcqId: answer.mcqId,
-                selectedOption: answer.selectedOption,
-                isCorrect
-            });
+        if (answer.selectedOption === mcq.correctOption) {
+            isCorrect = true;
+            obtainedMarks += mcq.marks;
         }
 
-        await Result.create({
+        await StudentAnswer.create({
             studentId,
             examId,
-            obtainedMarks
+            mcqId: answer.mcqId,
+            selectedOption: answer.selectedOption,
+            isCorrect
         });
+    }
 
-        return res.status(200).json({
-            success: true,
-            message: "Exam submitted successfully",
-            obtainedMarks
-        });
+    await Result.create({
+        studentId,
+        examId,
+        obtainedMarks
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Exam submitted successfully",
+        obtainedMarks
+    });
 };
 
 
 
 
-module.exports = { createExam, updateExam, findExamByteacherId, findExamBySection, displayExamStudent, submitExam }
+module.exports = { createExam, updateExam, findExamByteacherId, findExamBySection, displayExamStudent, submitExam ,findExamBySectionAndCourse}

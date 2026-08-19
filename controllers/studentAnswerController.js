@@ -21,6 +21,14 @@ const getAnswerOfStudentExam = async (req, res) => {
     }
 
     const studentAswers = await StudentAnswer.find({ examId, studentId });
+    
+    if((req.user.role==="student")&&(studentAnswers.studentId.toString()!==req.user.userId)){
+        return res.status(401).json({
+            success:false,
+            message:"You are not authorized for this request"
+        })
+    }
+
 
     const resultArray = [];
     for (let studentAnswer of studentAswers) {

@@ -6,13 +6,9 @@ const Result = require("../models/Result");
 
 const getStudentDashboard = async (req, res) => {
     const { studentId } = req.body;
-    const student = await User.findOne({ role: "student", _id: studentId })
-    if (!student) {
-        return res.status(500).json({
-            success: false,
-            message: "student not found"
-        })
-    }
+        const student = await User.findOne({ role: "student", _id: studentId })
+
+    
     //const {password , ...rest} = student
     //console.log(rest)
     //console.log("thi is student ", student)
@@ -139,13 +135,7 @@ const getStudentDashboard = async (req, res) => {
 
 const getTeacherDashBoard = async (req, res) => {
     const { teacherId } = req.body
-    const teacher = await User.findOne({ role: "teacher", _id: teacherId });
-    if (!teacher) {
-        return res.status(500).json({
-            success: false,
-            message: "Teacher Not found"
-        })
-    }
+   
 
     const courses = await CourseOffering.aggregate([
         {

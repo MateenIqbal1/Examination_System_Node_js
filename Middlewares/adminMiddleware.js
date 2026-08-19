@@ -1,13 +1,22 @@
-async function checkAdminMiddleware(req,res,next){
-    if (req.headers.role !== "admin") {
-        return res.status(403).json({
-            success: false,
-            message: "Only admin can access this route"
-        });
-    }
+const jwt = require('jsonwebtoken');
+const ApiError = require('../utils/ApiError');
 
-    next();
+async function adminMiddleware(req, res, next) {
+   
+    if(req.user.role !== "admin"){
+      return res.status(403).json({
+        success:false,
+        message:"You are not authorized for this request"
+      })
+    }
+       
+    next()
+   
 }
+
+
+
+
 module.exports = {
-    checkAdminMiddleware,
+    adminMiddleware,
 }

@@ -15,8 +15,8 @@ return res.status(201).json({
     message:"new Section created successfully",
     newSection
 })
-
 }
+
 const updateSection = async(req,res)=>{
     const {name,batch,semester } = req.body;
     const id =req.params.id;
@@ -29,12 +29,12 @@ const updateSection = async(req,res)=>{
     }
     if(name!==undefined){
         section.name = name ;
-        
     }
+
     if(batch !== undefined){
         section.batch = batch ;
-
     }
+    
     if(semester !== undefined){
         section.semester  = semester
     }
@@ -44,8 +44,8 @@ const updateSection = async(req,res)=>{
         message:"section updated successfully",
         section
     })
-
 }
+
 const getSectionWithId = async(req,res)=>{
     const id=req.params.id
     const section = await Section.findById(id);

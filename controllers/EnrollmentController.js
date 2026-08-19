@@ -9,6 +9,7 @@ if(enrollment === null){
         message:"Unable to create Enrollment , Somwthing Went wrong"
     })
 }
+
 return res.status(200).json({
     success:true,
     message:"enrollment created successfully",
@@ -39,8 +40,8 @@ const editEnrollment = async(req,res)=>{
 
     })
 }
-const getEnrollmentWithId = async(req,res)=>{
-   
+
+const getEnrollmentWithId = async(req,res)=>{   
     const id = req.params.id
     const enrollment = await Enrollment.findById(id)
     if(enrollment===null){
@@ -49,7 +50,7 @@ const getEnrollmentWithId = async(req,res)=>{
             message:"enrollment not found in db"
         })
     }
-  
+     
     return res.status(200).json({
         success:true,
         message:"eenrollment fetched successfully",
@@ -57,6 +58,7 @@ const getEnrollmentWithId = async(req,res)=>{
 
     })
 }
+
 const deleteEnrollment = async(req,res)=>{
     
     const id = req.params.id
@@ -74,4 +76,5 @@ const deleteEnrollment = async(req,res)=>{
         enrollment
     })
 }
+
 module.exports = {createEnrollent ,editEnrollment ,getEnrollmentWithId , deleteEnrollment}

@@ -1,13 +1,17 @@
 const express=require("express")
 const router=express.Router()
-const {checkAdminMiddleware} = require("../Middlewares/adminMiddleware")
 const {createUser , getUserWithId ,editUser, deleteUser} = require("../controllers/UserController")
+const { adminMiddleware } = require("../Middlewares/adminMiddleware")
+const authMiddleware = require("../Middlewares/authMiddleware")
+const { authorizeGetUserWithId } = require("../Middlewares/authorizationMiddlewares")
 
 
 
-router.post("/user/create",checkAdminMiddleware,createUser)
-router.get("/user/:id",checkAdminMiddleware,getUserWithId)
-router.post("/user/:id",checkAdminMiddleware,editUser)
-router.delete("/user/:id",checkAdminMiddleware,deleteUser)
+router.post("/user/create",authMiddleware,adminMiddleware,createUser)
+router.get("/user/:id",authMiddleware,authorizeGetUserWithId,getUserWithId)
+router.patch("/user/:id",authMiddleware,authorizeGetUserWithId,editUser)
+router.delete("/user/:id",authMiddleware,adminMiddleware,deleteUser)
+
+
 
 module.exports = router

@@ -17,11 +17,15 @@ const courseOfferingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-
+    isPaperAllowed:{
+        type: Boolean,
+        default: false
+    },
+   
     semester:Number,
 
     session:String
-
+ 
 },{
     timestamps:true
 });
