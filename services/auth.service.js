@@ -13,17 +13,14 @@ const generateToken = (userId,role) => {
   );
 };
 
-const signup = async ({ name, email, password ,role }) => {
+const signup = async ({ name, email, password  }) => {
   email = email.trim().toLowerCase();
 
   const existingUser = await User.findOne({ email });
 
 
   if(existingUser){
-    return res.status(500).json({
-        success:false,
-        message:"User already Exists"
-    })
+   throw new Error("User already Exists")
   }
     
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,8 +28,7 @@ const signup = async ({ name, email, password ,role }) => {
   const user = await User.create({
     name,
     email,
-    password: hashedPassword,
-    role
+    password: hashedPassword
   });
 
 
@@ -41,7 +37,7 @@ const signup = async ({ name, email, password ,role }) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      role
+      role:user.role
     },
   };
 };

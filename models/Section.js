@@ -16,5 +16,17 @@ const sectionSchema = new mongoose.Schema({
 },{
     timestamps:true
 });
+
+sectionSchema.index(
+    {
+        name: 1,
+        batch: 1,
+        semester: 1
+    },
+    {
+        unique: true,
+        name: "uniq_section_batch_semester"
+    }
+);
 const Section = mongoose.model("Section",sectionSchema)
 module.exports = Section

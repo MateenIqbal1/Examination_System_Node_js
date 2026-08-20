@@ -9,7 +9,7 @@ const { authorizeGetUserWithId } = require("../Middlewares/authorizationMiddlewa
 
 router.post("/user/create",authMiddleware,adminMiddleware,createUser)
 router.get("/user/:id",authMiddleware,authorizeGetUserWithId,getUserWithId)
-router.patch("/user/:id",authMiddleware,authorizeGetUserWithId,editUser)
+router.patch("/user/:id",authMiddleware,adminMiddleware,editUser)
 router.delete("/user/:id",authMiddleware,adminMiddleware,deleteUser)
 
 

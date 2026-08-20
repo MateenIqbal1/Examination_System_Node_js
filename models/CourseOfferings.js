@@ -29,7 +29,10 @@ const courseOfferingSchema = new mongoose.Schema({
 },{
     timestamps:true
 });
-
+courseOfferingSchema.index(
+    { courseId: 1, sectionId: 1, semester: 1, session: 1 },
+    { unique: true }
+);
 const CourseOffering = mongoose.model("CourseOffering",courseOfferingSchema)
 module.exports={
     CourseOffering

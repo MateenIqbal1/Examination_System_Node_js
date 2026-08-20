@@ -26,5 +26,9 @@ const studentAnswerSchema = new mongoose.Schema({
 },{
     timestamps:true
 });
+studentAnswerSchema.index(
+  { studentId: 1, examId: 1, mcqId: 1 },
+  { unique: true, name: "uniq_student_exam_mcq_answer" }
+);
 const StudentAnswer = mongoose.model("StudentAnswer",studentAnswerSchema)
 module.exports = StudentAnswer

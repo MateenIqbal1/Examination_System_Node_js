@@ -29,5 +29,10 @@ const examSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+examSchema.index(
+    { courseOfferingId: 1, title: 1 },
+    { unique: true }
+);
 const Exam = mongoose.model("Exam", examSchema)
 module.exports = { Exam }

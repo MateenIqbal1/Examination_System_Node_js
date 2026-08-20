@@ -60,8 +60,6 @@ const findExamByteacherId = async (req, res) => {
     }
 
 
-
-
     const mcqs = await Exam.aggregate([
         {
             $match: {

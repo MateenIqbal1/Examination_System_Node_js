@@ -16,7 +16,7 @@ const searchQueryRoutes = require("./routes/searchQueryRoutes");
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/AdminRoutes')
 const connectdb = require("./utils/db");
-const { adminMiddleware, teacherMiddleware, teacherOrAdminMiddleware } = require("./Middlewares/adminMiddleware");
+const errorMiddleware = require("./Middlewares/ErrorMiddleware");
 
 app.use(express.json())
 
@@ -35,6 +35,8 @@ app.use("/api",searchQueryRoutes)
 app.use("/api",authRoutes)
 app.use("/api",adminRoutes)
 
+
+app.use(errorMiddleware)
 
 
 const PORT = process.env.PORT 
