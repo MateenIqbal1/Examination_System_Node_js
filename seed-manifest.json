@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-08-20T08:04:15.183Z",
+  "counts": {
+    "admins": 2,
+    "teachers": 12,
+    "students": 60,
+    "exams": 24,
+    "activeExams": 12,
+    "upcomingExams": 6,
+    "endedExams": 6,
+    "enrollments": 206,
+    "mcqs": 240,
+    "answers": 720
+  },
+  "authUsers": {
+    "admin": {
+      "id": "6a86b08c59c0c53102e5651b",
+      "email": "admin1@exam.local",
+      "password": "123456"
+    },
+    "teacher": {
+      "id": "6a86b08c59c0c53102e5651d",
+      "email": "teacher1@exam.local",
+      "password": "123456"
+    },
+    "student": {
+      "id": "6a86b08c59c0c53102e56529",
+      "email": "student1@exam.local",
+      "password": "123456"
+    },
+    "blockedStudent": {
+      "id": "6a86b08c59c0c53102e56546",
+      "email": "student30@exam.local",
+      "password": "123456"
+    }
+  },
+  "endpointTestCases": {
+    "authorizedStudentExamAccess": {
+      "studentId": "6a86b08c59c0c53102e5652a",
+      "examId": "6a86b225eb009f390a0a55df",
+      "courseOfferingId": "6a86b1785082789da2797496"
+    },
+    "notEnrolledStudentExamAccess": {
+      "studentId": "6a86b08c59c0c53102e56529",
+      "examId": "6a86b225eb009f390a0a55df",
+      "courseOfferingId": "6a86b1785082789da2797496"
+    },
+    "droppedEnrollmentExamAccess": {
+      "studentId": "6a86b08c59c0c53102e56536",
+      "examId": "6a86b225eb009f390a0a55e3",
+      "courseOfferingId": "6a86b1785082789da279749a"
+    },
+    "blockedStudentAccess": {
+      "studentId": "6a86b08c59c0c53102e56546",
+      "examId": "6a86b225eb009f390a0a55df"
+    },
+    "submitAfterEndTime": {
+      "examId": "6a86b225eb009f390a0a55e1"
+    },
+    "submitBeforeStartTime": {
+      "examId": "6a86b225eb009f390a0a55e0"
+    },
+    "submitInActiveWindow": {
+      "examId": "6a86b225eb009f390a0a55df"
+    },
+    "teacherOwnExamUpdate": {
+      "teacherId": "6a86b08c59c0c53102e5651d",
+      "examId": "6a86b225eb009f390a0a55df"
+    },
+    "teacherOtherExamUpdate": {
+      "teacherId": "6a86b08c59c0c53102e5651d",
+      "examId": "6a86b225eb009f390a0a55e0",
+      "ownerTeacherId": "6a86b08c59c0c53102e5651e"
+    }
+  }
+}

@@ -15,6 +15,8 @@ const dashboardRoutes = require("./routes/DashBoardRoutes")
 const searchQueryRoutes = require("./routes/searchQueryRoutes");
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/AdminRoutes')
+const studentCourseEnrollmentRoutes= require('./routes/studentCourseEnrollment')
+
 const connectdb = require("./utils/db");
 const errorMiddleware = require("./Middlewares/ErrorMiddleware");
 
@@ -34,6 +36,8 @@ app.use("/api",dashboardRoutes)
 app.use("/api",searchQueryRoutes)
 app.use("/api",authRoutes)
 app.use("/api",adminRoutes)
+app.use("/api",studentCourseEnrollmentRoutes)
+
 
 
 app.use(errorMiddleware)
@@ -41,9 +45,9 @@ app.use(errorMiddleware)
 
 const PORT = process.env.PORT 
 
-// app.get('/', teacherOrAdminMiddleware , (req,res)=>{
-//    res.send({message:"hello world from get request"})
-// })
+app.get('/' , (req,res)=>{
+   res.send({message:"hello world from get request"})
+})
 
 app.listen(PORT, () => {
 console.log(`Server Running on ${PORT}`);

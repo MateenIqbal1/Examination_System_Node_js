@@ -32,7 +32,7 @@ const getCourseOffering = async (req, res) => {
 }
 
 const updateCourseOffering = async (req, res) => {
-    const { courseOfferingId, courseId, sectionId, teacherId, semester, session } = req.body
+    const { courseOfferingId, courseId, sectionId, teacherId, semester, session ,isPaperAllowed} = req.body
     const courseOffering = await CourseOffering.findById(courseOfferingId)
     if (!courseOffering) {
         return res.status(500).json({
@@ -55,6 +55,9 @@ const updateCourseOffering = async (req, res) => {
     }
     if (session !== undefined) {
         courseOffering.session = session
+    }
+    if (isPaperAllowed !== undefined) {
+        courseOffering.isPaperAllowed = isPaperAllowed
     }
     await courseOffering.save();
     return res.status(200).json({

@@ -153,10 +153,10 @@ const findExamBySectionAndCourse = async (req, res) => {
 
     const courseOffering = await CourseOffering.findOne({ sectionId, courseId }).select("_id")
     console.log("this is coureOffering", courseOffering)
-     const mcqs = await Exam.aggregate([
+    const mcqs = await Exam.aggregate([
         {
             $match: {
-                courseOfferingId: new  mongoose.Types.ObjectId(courseOffering)
+                courseOfferingId: new mongoose.Types.ObjectId(courseOffering)
             }
         },
         {
@@ -252,8 +252,44 @@ const submitExam = async (req, res) => {
     const { studentId, examId } = req.body;
     const { answers } = req.body;
 
+    const exam = await Exam.findById(examId);
+
+    if (!exam) {
+        return next(new ApiError(
+            404,
+            "Exam not found"
+        ));
+    }
+
+    const now = new Date();
+
+    if (now < exam.startTime) {
+        return next(new ApiError(
+            400,
+            "Exam has not started yet"
+        ));
+    }
+
+    if (now >= exam.endTime) {
+        return next(new ApiError(
+            400,
+            "Exam time has ended. Submission is not allowed"
+        ));
+    }
 
     const mcqs = await Mcq.find({ examId });
+
+
+    console.log(
+        "MCQs belonging to exam:",
+        mcqs.map(mcq => mcq._id.toString())
+    );
+
+    console.log(
+        "Submitted MCQ IDs:",
+        answers.map(answer => answer.mcqId)
+    );
+
 
     let obtainedMarks = 0;
 
@@ -263,7 +299,7 @@ const submitExam = async (req, res) => {
             item._id.toString() === answer.mcqId
         );
 
-        if (!mcq?.length) {
+        if (!mcq) {
             continue;
         }
 
@@ -299,4 +335,4 @@ const submitExam = async (req, res) => {
 
 
 
-module.exports = { createExam, updateExam, findExamByteacherId, findExamBySection, displayExamStudent, submitExam ,findExamBySectionAndCourse}
+module.exports = { createExam, updateExam, findExamByteacherId, findExamBySection, displayExamStudent, submitExam, findExamBySectionAndCourse }

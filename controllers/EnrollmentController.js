@@ -1,3 +1,4 @@
+const Section = require("../models/Section");
 const Enrollment = require("../models/StudentEnrollments")
 
 const createEnrollent = async(req,res)=>{
@@ -24,6 +25,14 @@ const editEnrollment = async(req,res)=>{
         return res.status(500).json({
             success:false,
             message:"enrollment not found in db"
+        })
+    }
+
+    const section = await Section.findById(sectionId)
+    if(section===null){
+        return res.status(500).json({
+            success:false,
+            message:"section not found in db"
         })
     }
     if(studentId!==undefined){

@@ -9,7 +9,7 @@ const mongoose = require("mongoose")
 
 const findResultStudent = async (req, res) => {
     const { examId, studentId } = req.body;
-
+   const student = await User.findById(studentId)
     const exam = await Exam.findById(examId);
     if (exam === undefined) {
         return res.status(404).json({
@@ -17,9 +17,6 @@ const findResultStudent = async (req, res) => {
             message: "exam id not found in db , provide a valid exam id"
         })
     }
-
-    
-    
 
     const result = await Result.findOne({ examId, studentId })
     if (result === undefined) {

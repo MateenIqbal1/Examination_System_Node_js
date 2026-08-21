@@ -30,29 +30,38 @@ const blockAStudent = async function(req,res){
 }
 
 
-const AllowExamToATeacher = async (req,res)=>{
-    const {courseofferingId} = req.body;
-    const courseOffering =  await CourseOffering.findById(courseofferingId);
-    if(!courseOffering){
-        return res.status(500).json({
-            success:false,
-            message:"Teacher Not found in db"
-        })
+const AllowExamToATeacher = async (req, res, next) => {
+    try {
+        const { courseId, teacherId } = req.body;
+
+        const courseOffering = await CourseOffering.findOne({
+            courseId,
+            teacherId
+        });
+
+        if (!courseOffering) {
+            return res.status(404).json({
+                success: false,
+                message: "Course offering not found"
+            });
+        }
+
+        courseOffering.isPaperAllowed = !courseOffering.isPaperAllowed;
+
+        await courseOffering.save();
+
+        return res.status(200).json({
+            success: true,
+            message: courseOffering.isPaperAllowed
+                ? "Teacher is now allowed to create exams"
+                : "Teacher is now blocked from creating exams",
+            isPaperAllowed: courseOffering.isPaperAllowed
+        });
+
+    } catch (error) {
+        next(error);
     }
-    if(courseOffering.isPaperAllowed){
-         courseOffering.isPaperAllowed = false;
-        await courseOffering.save()
-        return res.json({
-            message:"Teacher is Blocked for exam successfully"
-        })
-    }
-    courseOffering.isPaperAllowed = true;
-    await courseOffering.save()
-    return res.status(200).json({
-        success:true,
-        message:"Paper allowed successfully"
-    })
-}
+};
 
 const getAllTeachersOfASection= async(req,res)=>{
     const {sectionId} = req.body
@@ -169,4 +178,5 @@ const getAllStudentsOfASection = async(req,res)=>{
         result
     })
 }
+
 module.exports = {blockAStudent , AllowExamToATeacher,getAllTeachersOfASection,getAllCoursesOfASection,getAllStudentsOfASection}
